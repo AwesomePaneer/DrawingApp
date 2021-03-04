@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 
 TextEditingController searchBarController = TextEditingController();
 TextEditingController drawingNameInputController = TextEditingController();
-List<String> drawingList = [];
+List<String> drawingListNames = [];
+List<DrawingScreen> drawingScreens = [];
 
 class DrawingHomeScreen extends StatefulWidget {
   @override
@@ -34,27 +35,29 @@ class _DrawingHomeScreenState extends State<DrawingHomeScreen> {
             height: 40,
             child: TextField(
               controller: searchBarController,
+              //TODO Search Bar
             )
 
           ),
           ListView.builder(
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
-            itemCount: drawingList.length,
+            itemCount: drawingListNames.length,
             itemBuilder: (context, int index){
               return new Dismissible(
                 key: UniqueKey(),
                 child: ListTile(
-                  title: Text(drawingList[index]),
+                  title: Text(drawingListNames[index]),
                   onTap: (){
                     Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => DrawingScreen()),
+                        MaterialPageRoute(builder: (context) => drawingScreens[index]),
                     );
                   },
                 ),
                 onDismissed: (direction){
-                  drawingList.removeAt(index);
+                  drawingListNames.removeAt(index);
+                  drawingScreens.removeAt(index);
                 },
               );
             },
@@ -79,21 +82,11 @@ class _DrawingHomeScreenState extends State<DrawingHomeScreen> {
                       child: Text("OK"),
                       onPressed: (){
                         setState(() {
-                          drawingList.add(
+                          drawingListNames.add(
                             drawingNameInputController.text,
-                              // new ElevatedButton(
-                              //   child: Text(drawingNameInputController.text),
-                              //   onPressed: (){
-                              //     print("Pushed");
-                              //     Navigator.push(
-                              //         context,
-                              //         MaterialPageRoute(builder: (context) => DrawingScreen()),
-                              //     );
-                              //   },
-                              //   onLongPress: (){
-                              //     print("Long pressed");
-                              //   },
-                              // )
+                          );
+                          drawingScreens.add(
+                            new DrawingScreen(),
                           );
                         });
                         drawingNameInputController.text = "";
@@ -123,7 +116,7 @@ class DrawingScreen extends StatefulWidget {
   _DrawingScreenState createState() => _DrawingScreenState();
 }
 
-class _DrawingScreenState extends State<DrawingScreen> {
+class _DrawingScreenState extends State<DrawingScreen>{
 
   List<Offset> _points = <Offset>[];
 
@@ -145,7 +138,13 @@ class _DrawingScreenState extends State<DrawingScreen> {
             size: Size.infinite,
           ),
         ),
-      )
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: new Icon(Icons.clear),
+        onPressed: (){
+          _points.clear();
+        }
+      ),
     );
   }
 }
@@ -175,4 +174,6 @@ class Signature extends CustomPainter {
   }
 }
 
-
+//TODO Save Canvas while going to home screen
+//TODO Save list and Canvas while quitting app
+//TODO Add color changing and more
